@@ -1,19 +1,23 @@
 package com.usermanage.userdatamanage.service.impl;
 
 import com.usermanage.userdatamanage.Exception.PassNotValidException;
-import com.usermanage.userdatamanage.entity.UserDetails;
+import com.usermanage.userdatamanage.entity.UserDetail;
 import com.usermanage.userdatamanage.repository.UserDetailsRepo;
-import com.usermanage.userdatamanage.service.UserDetailsService;
+import com.usermanage.userdatamanage.service.UserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
+import java.util.Optional;
 
 @Service
-public class UserDetailsServiceImpl  implements UserDetailsService {
+public class UserDetailServiceImpl implements UserDetailService {
 
     @Autowired
     private UserDetailsRepo userDetailsRepo;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public String saveUserCredentials(String userName, String passWord) {
@@ -22,9 +26,9 @@ public class UserDetailsServiceImpl  implements UserDetailsService {
             if(!validation){
                 throw new PassNotValidException("password is not valid");
             }
-            UserDetails userDetail = new UserDetails();
+            UserDetail userDetail = new UserDetail();
             userDetail.setUserName(userName);
-            userDetail.setPassWord(passWord);
+            userDetail.setPassWord(passwordEncoder.encode(passWord));
             userDetailsRepo.save(userDetail);
             return "User Credentials Saved Successfully";
         }
@@ -33,9 +37,9 @@ public class UserDetailsServiceImpl  implements UserDetailsService {
 
     @Override
     public String getUserCredentials(String userName, String passWord) {
-        UserDetails userDetails = userDetailsRepo.findByUserName(userName);
-        if(userDetails != null){
-            if(userDetails.getPassWord().equals(passWord)){
+        Optional<UserDetail> userDetail = userDetailsRepo.findByUserName(userName);
+        if(userDetail != null){
+            if(userDetail.get().getPassWord().equals(passwordEncoder.encode(passWord))){
                 return "User Credentials Matched";
             }
             return "User Credentials Not Matched";
@@ -45,10 +49,10 @@ public class UserDetailsServiceImpl  implements UserDetailsService {
 
     @Override
     public String updateUserCredentials(String userName, String passWord) {
-        UserDetails userDetails = userDetailsRepo.findByUserName(userName);
-        if(userDetails != null){
-            userDetails.setPassWord(passWord);
-            userDetailsRepo.save(userDetails);
+        Optional<UserDetail> userDetail = userDetailsRepo.findByUserName(userName);
+        if(userDetail != null){
+            userDetail.get().setPassWord(passWord);
+            userDetailsRepo.save(userDetail.get());
             return "User Credentials Updated Successfully";
         }
         return "User Credentials Not Updated";
@@ -79,7 +83,7 @@ public class UserDetailsServiceImpl  implements UserDetailsService {
                 hasSpecialChar = true;
             }
         }
-        if (hasDigit && hasLowerCase && hasLowerCase && hasSpecialChar) {
+        if (hasDigit && hasLowerCase && hasUpperCase && hasSpecialChar) {
             return true;
         }
         return false;

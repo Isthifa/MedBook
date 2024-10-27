@@ -1,7 +1,6 @@
 package com.usermanage.userdatamanage.entity;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Getter;
@@ -13,11 +12,12 @@ import lombok.Setter;
 @Getter
 @Setter
 @RequiredArgsConstructor
-public class UserDetails {
+public class UserDetail {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
 
+    @Column(name = "rec_id")
     private long RecId;
 
     @Column(unique = true)

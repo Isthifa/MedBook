@@ -1,6 +1,6 @@
 package com.usermanage.userdatamanage.service;
 
-public interface UserDetailsService {
+public interface UserDetailService {
 
      String saveUserCredentials(String userName, String passWord);
      String getUserCredentials(String userName, String passWord);

@@ -1,8 +1,7 @@
 package com.usermanage.userdatamanage.controller;
 
-import com.usermanage.userdatamanage.dto.UserDTO;
-import com.usermanage.userdatamanage.entity.UserDetails;
-import com.usermanage.userdatamanage.service.UserDetailsService;
+import com.usermanage.userdatamanage.entity.UserDetail;
+import com.usermanage.userdatamanage.service.UserDetailService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.logging.Log;
@@ -13,20 +12,21 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api")
+@Slf4j
 public class UserController {
 
-    Log log = LogFactory.getLog(UserController.class);
     @Autowired
-    private UserDetailsService userDetailsService;
+    private UserDetailService userDetailService;
 
-    @PostMapping("/save")
-    public ResponseEntity<String> save(@RequestBody @Valid UserDetails userDTOs) {
-        return ResponseEntity.ok(userDetailsService.saveUserCredentials(userDTOs.getUserName(), userDTOs.getPassWord()));
+    @PostMapping("/new/user")
+    public ResponseEntity<String> save(@RequestBody @Valid UserDetail userDTOs) {
+        log.info("UserDetail: " + userDTOs);
+        return ResponseEntity.ok(userDetailService.saveUserCredentials(userDTOs.getUserName(), userDTOs.getPassWord()));
     }
 
     @GetMapping("/get")
     public ResponseEntity<String> get(@Param("userName") String userName, @Param("passWord") String passWord) {
-        return ResponseEntity.ok(userDetailsService.getUserCredentials(userName, passWord));
+        return ResponseEntity.ok(userDetailService.getUserCredentials(userName, passWord));
     }
 }
